@@ -3,9 +3,9 @@ package com.test.blockchain;
 import java.util.ArrayList;
 
 public class Blockchain {
-    private ArrayList<Block> chainList = new ArrayList<Block>();
+    private final ArrayList<Block> chainList = new ArrayList<Block>();
 
-    private short miningDifficulty = 1;
+    private short miningDifficulty = 4;
 
     private static Blockchain instance = null;
 

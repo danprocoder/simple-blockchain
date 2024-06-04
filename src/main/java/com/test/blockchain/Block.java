@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import com.test.helper.SHA256;
 
 public class Block {
-    private String previousBlockHash;
+    private final String previousBlockHash;
 
-    private long timestamp;
+    private final long timestamp;
+
+    private final ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
 
     private String hash;
 
     private int nonce = 0;
-
-    private ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
 
     public Block(String previousBlockHash, long timestamp) {
         this.previousBlockHash = previousBlockHash;
