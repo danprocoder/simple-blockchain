@@ -1,6 +1,16 @@
 package com.test.blockchain;
 
 public class Miner {
+    public static Miner instance;
+
+    public static Miner getInstance() {
+        if (instance == null) {
+            instance = new Miner();
+        }
+
+        return instance;
+    }
+
     public void onTransaction(Transaction transaction) {
         System.out.println("Transaction received: " + transaction.toString());
 

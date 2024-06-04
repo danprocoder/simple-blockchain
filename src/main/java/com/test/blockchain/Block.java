@@ -40,10 +40,10 @@ public class Block {
     }
 
     public void proofOfWork() {
-        while (!this.checkHash()) {
+        do {
             this.nonce++;
             this.hash = this.computeHash();
-        }
+        } while (!this.checkHash());
     }
 
     private boolean checkHash() {
