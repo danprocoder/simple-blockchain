@@ -2,6 +2,7 @@ package com.test;
 
 import java.util.Scanner;
 
+import com.test.blockchain.Blockchain;
 import com.test.blockchain.Miner;
 import com.test.blockchain.Transaction;
 
@@ -25,9 +26,11 @@ public class Main {
 
                 Miner.getInstance().onTransaction(new Transaction(from, to, Double.parseDouble(amount)));
             } else if (command.equals("print-blockchain")) {
-                System.out.println("In progress");
+                Blockchain.getInstance().printBlockchain();
             } else if (command.equals("exit")) {
                 break;
+            } else {
+                System.out.println("Unknown command '" + command + "'");
             }
         }
 

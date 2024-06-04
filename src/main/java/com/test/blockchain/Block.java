@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import com.test.helper.SHA256;
 
 public class Block {
+    private final int index;
+
     private final String previousBlockHash;
 
     private final long timestamp;
@@ -14,13 +16,30 @@ public class Block {
 
     private int nonce = 0;
 
-    public Block(String previousBlockHash, long timestamp) {
+    public Block(int index, String previousBlockHash, long timestamp) {
+        this.index = index;
         this.previousBlockHash = previousBlockHash;
         this.timestamp = timestamp;
     }
 
     public void addTransaction(Transaction transaction) {
         this.transactionList.add(transaction);
+    }
+
+    public ArrayList<Transaction> getTransactions() {
+        return this.transactionList;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public long getTimestamp() {
+        return this.timestamp;
+    }
+
+    public String getPreviousHash() {
+        return this.previousBlockHash;
     }
 
     public String getHash() {

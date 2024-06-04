@@ -16,7 +16,7 @@ public class Miner {
 
         Blockchain blockchain = Blockchain.getInstance();
 
-        Block newBlock = new Block(blockchain.getLastHash(), System.currentTimeMillis() / 1000L);
+        Block newBlock = new Block(blockchain.getSize(), blockchain.getLastHash(), System.currentTimeMillis() / 1000L);
         newBlock.addTransaction(transaction);
         newBlock.proofOfWork();
 

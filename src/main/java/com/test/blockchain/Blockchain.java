@@ -31,6 +31,10 @@ public class Blockchain {
         return this.miningDifficulty;
     }
 
+    public int getSize() {
+        return this.chainList.size();
+    }
+
     public String getLastHash() {
         int size = this.chainList.size();
         if (size < 1) {
@@ -38,5 +42,21 @@ public class Blockchain {
         }
 
         return this.chainList.get(size - 1).getHash();
+    }
+
+    public void printBlockchain() {
+        for (Block block: this.chainList) {
+            System.out.println("Block #" + block.getIndex());
+            System.out.println("Previous Hash: " + block.getPreviousHash());
+            System.out.println("Hash: " + block.getHash());
+            System.out.println("Timestamp: " + block.getTimestamp());
+            System.out.println();
+
+            for (Transaction trx: block.getTransactions()) {
+                System.out.println(trx.toString());
+            }
+
+            System.out.println();
+        }
     }
 }
