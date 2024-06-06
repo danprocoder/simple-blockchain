@@ -40,6 +40,7 @@ public class Main implements MainListener, NodeFinderListener, MineListener {
 
     @Override()
     public void onTransactionReceived(Transaction transaction) {
+        // TODO: verify transaction before mining
         System.out.println("Transaction received. Starting Mine: " + transaction.toString());
         Miner miner = Miner.getInstance();
         miner.generateBlock(transaction, this);
@@ -47,8 +48,14 @@ public class Main implements MainListener, NodeFinderListener, MineListener {
 
     @Override()
     public void onBlockMined(Block block) {
-        System.out.println("Block mined. Sending to connected nodes.");
-        
+        System.out.println("Block mined. Will verify first then send to connected nodes...");
+        if (!block.getHash().equals(block.computeHash())) {
+            return;
+        }
+
+        // TODO: check order and add rearrange.
+        this.blockchain.addToBlockChain(block);
+
         // Broadcast mine to all connected nodes
         for (Node node: this.connectedNodes) {
             try {
@@ -69,6 +76,7 @@ public class Main implements MainListener, NodeFinderListener, MineListener {
                 e.printStackTrace();
             }
         }
+        System.out.println("Block sent to all nodes");
     }
 
 }

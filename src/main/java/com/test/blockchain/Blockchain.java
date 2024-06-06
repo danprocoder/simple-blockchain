@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Blockchain {
     private final ArrayList<Block> chainList = new ArrayList<Block>();
 
-    private short miningDifficulty = 4;
+    private short miningDifficulty = 5;
 
     private static Blockchain instance = null;
 
@@ -19,11 +19,7 @@ public class Blockchain {
         return Blockchain.instance;
     }
 
-    public void addToBlockChain(Block block) throws Exception {
-        if (!block.getHash().equals(block.computeHash())) {
-            throw new Exception("Block hash mismatch");
-        }
-
+    public void addToBlockChain(Block block) {
         this.chainList.add(block);
     }
 
