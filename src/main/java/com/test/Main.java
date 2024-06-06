@@ -1,39 +1,74 @@
 package com.test;
 
-import java.util.Scanner;
+import java.util.ArrayList;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.test.blockchain.Block;
 import com.test.blockchain.Blockchain;
+import com.test.blockchain.MineListener;
 import com.test.blockchain.Miner;
 import com.test.blockchain.Transaction;
+import com.test.node.Node;
+import com.test.node.NodeAddress;
+import com.test.node.NodeFinder;
+import com.test.node.NodeFinderListener;
 
-public class Main {
+public class Main implements MainListener, NodeFinderListener, MineListener {
+    
+    ArrayList<Node> connectedNodes = new ArrayList<Node>();
+
+    ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+
+    Blockchain blockchain = Blockchain.getInstance();
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        NodeFinder finder = NodeFinder.getInstance();
+        finder.findNodes(new Main());
+    }
 
-        while (true) {
-            System.out.print("Action: ");
-            String command = scanner.nextLine();
+    @Override()
+    public void onNodeFound(NodeAddress address) {
+        Node node = new Node(address, this);
+        node.start();
+    }
 
-            if (command.equals("transfer")) {
-                System.out.print("From Addr: ");
-                String from = scanner.nextLine();
+    @Override()
+    public void onNodeConnected(Node node) {
+        this.connectedNodes.add(node);
+    }
 
-                System.out.print("To Addr: ");
-                String to = scanner.nextLine();
+    @Override()
+    public void onTransactionReceived(Transaction transaction) {
+        System.out.println("Transaction received. Starting Mine: " + transaction.toString());
+        Miner miner = Miner.getInstance();
+        miner.generateBlock(transaction, this);
+    }
 
-                System.out.print("Amount: ");
-                String amount = scanner.nextLine();
+    @Override()
+    public void onBlockMined(Block block) {
+        System.out.println("Block mined. Sending to connected nodes.");
+        
+        // Broadcast mine to all connected nodes
+        for (Node node: this.connectedNodes) {
+            try {
+                JsonObject payload = new JsonObject();
+                payload.addProperty("action", "block");
 
-                Miner.getInstance().onTransaction(new Transaction(from, to, Double.parseDouble(amount)));
-            } else if (command.equals("print-blockchain")) {
-                Blockchain.getInstance().printBlockchain();
-            } else if (command.equals("exit")) {
-                break;
-            } else {
-                System.out.println("Unknown command '" + command + "'");
+                JsonObject data = new JsonObject();
+                data.addProperty("previousHash", block.getPreviousHash());
+                data.addProperty("hash", block.getHash());
+                data.addProperty("nonce", block.getNonce());
+                data.addProperty("timestamp", block.getTimestamp());
+                data.addProperty("transactions", block.getTransactions().toString());
+
+                payload.add("data", data);
+
+                node.sendMessage(new Gson().toJson(payload));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-
-        scanner.close();
     }
+
 }

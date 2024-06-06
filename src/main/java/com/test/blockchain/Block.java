@@ -34,6 +34,10 @@ public class Block {
         return this.index;
     }
 
+    public int getNonce() {
+        return this.nonce;
+    }
+
     public long getTimestamp() {
         return this.timestamp;
     }
