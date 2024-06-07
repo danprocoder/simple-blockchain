@@ -61,7 +61,7 @@ public class Main implements MainListener, NodeFinderListener, MineListener {
         for (Node node: this.connectedNodes) {
             try {
                 JsonObject payload = new JsonObject();
-                payload.addProperty("action", "block");
+                payload.addProperty("action", "add-block");
                 payload.add("data", block.toJson());
 
                 node.sendMessage(new Gson().toJson(payload));

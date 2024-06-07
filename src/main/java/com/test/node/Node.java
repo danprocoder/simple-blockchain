@@ -54,7 +54,7 @@ public class Node extends Thread {
             Message message = gson.fromJson(json, Message.class);
             LinkedTreeMap<String, Object> payload = message.getData();
 
-            if (message.getAction().equals("transaction")) {
+            if (message.getAction().equals("send-transaction")) {
                 this.listener.onTransactionReceived(
                     new Transaction(
                         (String) payload.get("from"),
