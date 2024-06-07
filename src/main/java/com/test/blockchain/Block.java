@@ -1,6 +1,13 @@
 package com.test.blockchain;
 
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
+
+import com.test.Wallet;
 import com.test.helper.SHA256;
 
 public class Block {
@@ -16,10 +23,16 @@ public class Block {
 
     private int nonce = 0;
 
-    public Block(int index, String previousBlockHash, long timestamp) {
+    private double transactionFee = 2;
+    private double miningReward = 2;
+
+    public Block(int index, String previousBlockHash, long timestamp) throws Exception {
         this.index = index;
         this.previousBlockHash = previousBlockHash;
         this.timestamp = timestamp;
+
+        // Create coinbase transaction
+        this.transactionList.add(this.getCoinbaseTransaction());
     }
 
     public void addTransaction(Transaction transaction) {
@@ -77,5 +90,33 @@ public class Block {
             target.append('0');
         }
         return this.hash.startsWith(target.toString());
+    }
+
+    private Transaction getCoinbaseTransaction() throws Exception {
+        long timestamp = System.currentTimeMillis();
+        String trxData = "Trx{from=, to=" + Wallet.getAddress() + ", amount=0, timestamp=" + timestamp + "}";
+        String signature = this.signWithKey(trxData, Wallet.getSecretKey());
+
+        return new Transaction(
+            "",
+            Wallet.getAddress(),
+            this.miningReward + this.transactionFee,
+            timestamp,
+            signature
+        );
+    }
+
+    private String signWithKey(String data, String key) throws Exception {
+        PrivateKey privateKey = KeyFactory
+            .getInstance("RSA")
+            .generatePrivate(
+                new X509EncodedKeySpec(key.getBytes())
+            );
+
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initSign(privateKey);
+        signature.update(data.getBytes());
+
+        return Base64.getEncoder().encodeToString(signature.sign());
     }
 }

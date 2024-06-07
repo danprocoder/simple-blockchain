@@ -7,11 +7,11 @@ public class Transaction {
 
     private final Double amount;
 
-    private final Double timestamp;
+    private final long timestamp;
 
     private final String signature;
 
-    public Transaction(String fromAddress, String toAddress, Double amount, Double timestamp, String signature) {
+    public Transaction(String fromAddress, String toAddress, Double amount, long timestamp, String signature) {
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.amount = amount;

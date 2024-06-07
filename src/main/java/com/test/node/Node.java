@@ -7,6 +7,7 @@ import java.net.Socket;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.test.MainListener;
+import com.test.Wallet;
 import com.test.blockchain.Transaction;
 
 public class Node extends Thread {
@@ -59,7 +60,7 @@ public class Node extends Thread {
                         (String) payload.get("from"),
                         (String) payload.get("to"),
                         (Double) payload.get("amount"),
-                        (Double) payload.get("timestamp"),
+                        ((Double) payload.get("timestamp")).longValue(),
                         (String) payload.get("signature")
                     )
                 );
@@ -69,7 +70,8 @@ public class Node extends Thread {
 
     private boolean initiateHandshake() throws IOException {
         DataOutputStream dos = new DataOutputStream(this.socket.getOutputStream());
-        dos.write("MINER 1.0\r\n\r\n".getBytes());
+        String header = "MINER 1.0\r\nAddress: " + Wallet.getAddress() + "\r\n\r\n";
+        dos.write(header.getBytes());
         dos.flush();
 
         return true;
