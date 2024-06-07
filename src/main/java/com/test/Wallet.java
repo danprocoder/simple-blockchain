@@ -1,8 +1,8 @@
 package com.test;
 
 public class Wallet {
-    private static String minersAddress = "MFswDQYJKoZIhvcNAQEBBQADSgAwRwJATqSOQt6Xi6dynmPvdk9ve9uZpdvz/BgO65+bjlHNGSq5h/SdXl57j/tmHUTMZ5KSx31MaP0HYPJAVtiPQ/KC3QIDAQAB";
-    private static String minersSecretKey = "MIIBOAIBAAJATqSOQt6Xi6dynmPvdk9ve9uZpdvz/BgO65+bjlHNGSq5h/SdXl57j/tmHUTMZ5KSx31MaP0HYPJAVtiPQ/KC3QIDAQABAkAZl9P0Txxihov2n+8+QXu2gzDtmTc9w1aXt8mX92cX2UMzlemmEHVMbml49eeJxH8tvYQpgT/EioLvYWunQHABAiEAlLCsM7ufMmX9S1bq1KQsx541UpPIQPtVED20mxMhTJ0CIQCHZj/NvbRlDF9m7eu57YD1ADj5LCOSSEyhSa0iwRebQQIgKPoLavJg7BW5WWLpspJQGO8byNcbT/UzuxcWR8pc2e0CIBpRmsdgP6eAry6vwqlibDWzdF+i38s4eITFcH0X8YHBAiBu8pgi7wS8S97GtZCtdUy0HKvL2PoJhyAsGx+/pzaJSw==";
+    private static String minersAddress = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIWN5epnVCEUXguBp2Id6KAHmQXplNn+/XvXXvIaWs9O2s/ezbQ/PyOIOVJ1+sJKDKuTMTgeNjw44vynsbdZncMCAwEAAQ==";
+    private static String minersSecretKey = "MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAhY3l6mdUIRReC4GnYh3ooAeZBemU2f79e9de8hpaz07az97NtD8/I4g5UnX6wkoMq5MxOB42PDji/Kext1mdwwIDAQABAkBN9CZILKnJaSb/ll0KAyUeC3FBJzbwC0sPtwU/USzCJY+agAuE6WKFIWXchDOj0HtGHQqxirYf+6M2MdOvPCHRAiEAw1DAwebz2zUKCZLuGL9zDcl3fTlIPa3tPX3OClQ82csCIQCvDLVaEz/llaIfx+wotVKATSYyqcLCdRt5XiGhVIms6QIhAKtwFVHd28xcmOvgaVeVrHK8lUJ4Zj2ljej8pT8Rw7vTAiBx3Wxh6T+ZEZph3ePqHvhJaOW98tszLoXujqKFlL3xcQIhAJYzL/GEb/Ci35e56guCdRs9ScmPlP2Jm6fnUfBBzH6u";
     
     public static String getAddress() {
         return minersAddress;

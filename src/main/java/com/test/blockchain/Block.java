@@ -3,10 +3,12 @@ package com.test.blockchain;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.Signature;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.test.Wallet;
 import com.test.helper.SHA256;
 
@@ -82,6 +84,22 @@ public class Block {
         } while (!this.checkHash());
     }
 
+    public JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        json.addProperty("previousHash", this.getPreviousHash());
+        json.addProperty("hash", this.getHash());
+        json.addProperty("nonce", this.getNonce());
+        json.addProperty("timestamp", this.getTimestamp());
+
+        JsonArray trxArray = new JsonArray();
+        for (Transaction trx: this.getTransactions()) {
+            trxArray.add(trx.toJson());
+        }
+        json.add("transactions", trxArray);
+
+        return json;
+    }
+
     private boolean checkHash() {
         short difficulty = Blockchain.getInstance().getMiningDifficulty();
 
@@ -107,11 +125,11 @@ public class Block {
     }
 
     private String signWithKey(String data, String key) throws Exception {
-        PrivateKey privateKey = KeyFactory
-            .getInstance("RSA")
-            .generatePrivate(
-                new X509EncodedKeySpec(key.getBytes())
-            );
+        System.out.println(key);
+
+        byte[] decoded = Base64.getDecoder().decode(key);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
+        PrivateKey privateKey = KeyFactory.getInstance("RSA").generatePrivate(keySpec);
 
         Signature signature = Signature.getInstance("SHA256withRSA");
         signature.initSign(privateKey);
