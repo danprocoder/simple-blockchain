@@ -1,6 +1,15 @@
 package com.test.blockchain;
 
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.test.Wallet;
 import com.test.helper.SHA256;
 
 public class Block {
@@ -16,10 +25,16 @@ public class Block {
 
     private int nonce = 0;
 
-    public Block(int index, String previousBlockHash, long timestamp) {
+    private double transactionFee = 2;
+    private double miningReward = 2;
+
+    public Block(int index, String previousBlockHash, long timestamp) throws Exception {
         this.index = index;
         this.previousBlockHash = previousBlockHash;
         this.timestamp = timestamp;
+
+        // Create coinbase transaction
+        this.transactionList.add(this.getCoinbaseTransaction());
     }
 
     public void addTransaction(Transaction transaction) {
@@ -69,6 +84,22 @@ public class Block {
         } while (!this.checkHash());
     }
 
+    public JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        json.addProperty("previousHash", this.getPreviousHash());
+        json.addProperty("hash", this.getHash());
+        json.addProperty("nonce", this.getNonce());
+        json.addProperty("timestamp", this.getTimestamp());
+
+        JsonArray trxArray = new JsonArray();
+        for (Transaction trx: this.getTransactions()) {
+            trxArray.add(trx.toJson());
+        }
+        json.add("transactions", trxArray);
+
+        return json;
+    }
+
     private boolean checkHash() {
         short difficulty = Blockchain.getInstance().getMiningDifficulty();
 
@@ -77,5 +108,33 @@ public class Block {
             target.append('0');
         }
         return this.hash.startsWith(target.toString());
+    }
+
+    private Transaction getCoinbaseTransaction() throws Exception {
+        long timestamp = System.currentTimeMillis();
+        String trxData = "Trx{from=, to=" + Wallet.getAddress() + ", amount=0, timestamp=" + timestamp + "}";
+        String signature = this.signWithKey(trxData, Wallet.getSecretKey());
+
+        return new Transaction(
+            "",
+            Wallet.getAddress(),
+            this.miningReward + this.transactionFee,
+            timestamp,
+            signature
+        );
+    }
+
+    private String signWithKey(String data, String key) throws Exception {
+        System.out.println(key);
+
+        byte[] decoded = Base64.getDecoder().decode(key);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
+        PrivateKey privateKey = KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initSign(privateKey);
+        signature.update(data.getBytes());
+
+        return Base64.getEncoder().encodeToString(signature.sign());
     }
 }

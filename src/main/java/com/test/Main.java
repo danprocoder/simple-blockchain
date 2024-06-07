@@ -3,6 +3,7 @@ package com.test;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.test.blockchain.Block;
 import com.test.blockchain.Blockchain;
@@ -61,15 +62,7 @@ public class Main implements MainListener, NodeFinderListener, MineListener {
             try {
                 JsonObject payload = new JsonObject();
                 payload.addProperty("action", "block");
-
-                JsonObject data = new JsonObject();
-                data.addProperty("previousHash", block.getPreviousHash());
-                data.addProperty("hash", block.getHash());
-                data.addProperty("nonce", block.getNonce());
-                data.addProperty("timestamp", block.getTimestamp());
-                data.addProperty("transactions", block.getTransactions().toString());
-
-                payload.add("data", data);
+                payload.add("data", block.toJson());
 
                 node.sendMessage(new Gson().toJson(payload));
             } catch (Exception e) {
