@@ -7,13 +7,13 @@ public class Transaction {
 
     private final String toAddress;
 
-    private final Double amount;
+    private final double amount;
 
     private final long timestamp;
 
     private final String signature;
 
-    public Transaction(String fromAddress, String toAddress, Double amount, long timestamp, String signature) {
+    public Transaction(String fromAddress, String toAddress, double amount, long timestamp, String signature) {
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.amount = amount;
@@ -29,7 +29,7 @@ public class Transaction {
         return this.toAddress;
     }
 
-    public Double getAmount() {
+    public double getAmount() {
         return this.amount;
     }
 
@@ -43,7 +43,7 @@ public class Transaction {
 
     @Override()
     public String toString() {
-        return "Trx{from=" + this.fromAddress + ", to=" + this.toAddress + ", amount=" + this.amount + "}";
+        return "Trx{from=" + this.fromAddress + ", to=" + this.toAddress + ", amount=" + this.amount + ", timestamp=" + this.timestamp + "}";
     }
 
     public JsonObject toJson() {

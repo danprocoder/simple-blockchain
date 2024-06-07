@@ -12,11 +12,12 @@ public class Blockchain {
     private Blockchain() {}
 
     public static Blockchain getInstance() {
-        if (Blockchain.instance == null) {
-            Blockchain.instance = new Blockchain();
+        if (instance == null) {
+            instance = new Blockchain();
+            instance.addToBlockChain(instance.getGenesisBlock());
         }
 
-        return Blockchain.instance;
+        return instance;
     }
 
     public void addToBlockChain(Block block) {
@@ -38,5 +39,22 @@ public class Blockchain {
         }
 
         return this.chainList.get(size - 1).getHash();
+    }
+
+    public Block getGenesisBlock() {
+        Transaction trx = new Transaction(
+            "",
+            "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANr06tKOATfgwvQyGNqq2faXfJfIg9QfYci9MSQemFvUUTdlMCx6/mW9P04XeoPOj4K+mFK+IJGzBKFBIE4xy9MCAwEAAQ==",
+            5000,
+            1717779330000L,
+            ""
+        );
+
+        Block genesis = new Block(0, "", 1234565454L);
+        genesis.setNonce(1);
+        genesis.addTransaction(trx);
+        genesis.setHash(genesis.computeHash());
+
+        return genesis;
     }
 }

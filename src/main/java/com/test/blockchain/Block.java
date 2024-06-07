@@ -1,15 +1,9 @@
 package com.test.blockchain;
 
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Base64;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.test.Wallet;
 import com.test.helper.SHA256;
 
 public class Block {
@@ -25,20 +19,23 @@ public class Block {
 
     private int nonce = 0;
 
-    private double transactionFee = 2;
-    private double miningReward = 2;
-
-    public Block(int index, String previousBlockHash, long timestamp) throws Exception {
+    public Block(int index, String previousBlockHash, long timestamp) {
         this.index = index;
         this.previousBlockHash = previousBlockHash;
         this.timestamp = timestamp;
-
-        // Create coinbase transaction
-        this.transactionList.add(this.getCoinbaseTransaction());
     }
 
     public void addTransaction(Transaction transaction) {
         this.transactionList.add(transaction);
+    }
+
+    /**
+     * Sets the nonce value.
+     *
+     * @param nonce
+     */
+    public void setNonce(int nonce) {
+        this.nonce = nonce;
     }
 
     public ArrayList<Transaction> getTransactions() {
@@ -60,19 +57,29 @@ public class Block {
     public String getPreviousHash() {
         return this.previousBlockHash;
     }
+    
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
 
     public String getHash() {
         return this.hash;
     }
 
+    /**
+     * Computes a has for the block. Make sure previous block hash, timestamp, nonce and transactions are set first (if
+     * they need to be included) before computing.
+     *
+     * @return the computed hash
+     */
     public String computeHash() {
-        String data = this.previousBlockHash + Long.toString(this.timestamp);
+        String data = this.previousBlockHash + this.timestamp;
 
         for (Transaction trx: this.transactionList) {
             data += trx.toString();
         }
 
-        data += Integer.toString(this.nonce);
+        data += this.nonce;
 
         return SHA256.hash(data);
     }
@@ -110,31 +117,4 @@ public class Block {
         return this.hash.startsWith(target.toString());
     }
 
-    private Transaction getCoinbaseTransaction() throws Exception {
-        long timestamp = System.currentTimeMillis();
-        String trxData = "Trx{from=, to=" + Wallet.getAddress() + ", amount=0, timestamp=" + timestamp + "}";
-        String signature = this.signWithKey(trxData, Wallet.getSecretKey());
-
-        return new Transaction(
-            "",
-            Wallet.getAddress(),
-            this.miningReward + this.transactionFee,
-            timestamp,
-            signature
-        );
-    }
-
-    private String signWithKey(String data, String key) throws Exception {
-        System.out.println(key);
-
-        byte[] decoded = Base64.getDecoder().decode(key);
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
-        PrivateKey privateKey = KeyFactory.getInstance("RSA").generatePrivate(keySpec);
-
-        Signature signature = Signature.getInstance("SHA256withRSA");
-        signature.initSign(privateKey);
-        signature.update(data.getBytes());
-
-        return Base64.getEncoder().encodeToString(signature.sign());
-    }
 }
