@@ -3,9 +3,8 @@ package com.test.node;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.test.MainListener;
 import com.test.Wallet;
 import com.test.blockchain.Transaction;
@@ -38,9 +37,9 @@ public class Node extends Thread {
         }
     }
 
-    public void sendMessage(String message) throws IOException {
+    public void sendMessage(Message message) throws IOException {
         DataOutputStream dos = new DataOutputStream(this.socket.getOutputStream());
-        dos.write(message.getBytes());
+        dos.write(message.toString().getBytes());
         dos.flush();
     }
 
@@ -50,11 +49,11 @@ public class Node extends Thread {
         while ((bytesRead = this.socket.getInputStream().read(buffer)) != -1) {
             String json = new String(buffer, 0, bytesRead);
 
-            Gson gson = new Gson();
-            Message message = gson.fromJson(json, Message.class);
-            LinkedTreeMap<String, Object> payload = message.getData();
+            Message message = Message.fromText(json);
 
-            if (message.getAction().equals("send-transaction")) {
+            if (message.getHeader("event").equals("send-transaction")) {
+                HashMap<String, Object> payload = message.getJsonBody();
+
                 this.listener.onTransactionReceived(
                     new Transaction(
                         (String) payload.get("from"),
