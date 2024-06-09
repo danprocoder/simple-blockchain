@@ -10,7 +10,7 @@ import java.util.Base64;
 
 
 public class SHA256 {
-    public static String hash(String input) {
+    public static String hashSHA256(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
@@ -35,8 +35,6 @@ public class SHA256 {
      * @throws Exception
      */
     public static String signWithKey(String data, String key) throws Exception {
-        System.out.println(key);
-
         byte[] decoded = Base64.getDecoder().decode(key);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
         PrivateKey privateKey = KeyFactory.getInstance("RSA").generatePrivate(keySpec);

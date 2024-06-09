@@ -1,6 +1,11 @@
-package com.test.blockchain;
+package com.test.miner;
+
+import java.text.DecimalFormat;
 
 import com.test.Wallet;
+import com.test.blockchain.Block;
+import com.test.blockchain.Blockchain;
+import com.test.blockchain.Transaction;
 import com.test.helper.SHA256;
 
 public class Miner {
@@ -21,15 +26,36 @@ public class Miner {
         Blockchain blockchain = Blockchain.getInstance();
 
         try {
-            Block newBlock = new Block(blockchain.getSize(), blockchain.getLastHash(), System.currentTimeMillis());
+            Block newBlock = new Block(blockchain.getLastBlock().getHash(),  System.currentTimeMillis());
             newBlock.addTransaction(this.getCoinbaseTransaction());
             newBlock.addTransaction(transaction);
-            newBlock.proofOfWork();
+            this.blk(newBlock);
     
             listener.onBlockMined(newBlock);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    private boolean checkHash(String hash) {
+        int difficulty = Blockchain.getInstance().getMiningDifficulty();
+    
+        StringBuilder target = new StringBuilder();
+        for (int i = 0; i < difficulty; i++) {
+            target.append('0');
+        }
+        return hash.startsWith(target.toString());
+    }
+    
+    public void blk(Block block) throws Exception {
+        int nonce = 0;
+        String hash;
+        do {
+            block.setNonce(nonce++);
+            hash = block.computeHash();
+        } while (!this.checkHash(hash));
+
+        block.setHash(hash);
     }
 
     /**
@@ -40,13 +66,16 @@ public class Miner {
      */
     private Transaction getCoinbaseTransaction() throws Exception {
         long timestamp = System.currentTimeMillis();
-        String trxData = "Trx{from=, to=" + Wallet.getAddress() + ", amount=0, timestamp=" + timestamp + "}";
+        double amount = this.miningReward + this.transactionFee;
+        String trxData = "Trx{from=, to=" + Wallet.getAddress() +
+            ", amount=" + new DecimalFormat("0.#").format(amount) +
+            ", timestamp=" + timestamp + "}";
         String signature = SHA256.signWithKey(trxData, Wallet.getSecretKey());
 
         return new Transaction(
             "",
             Wallet.getAddress(),
-            this.miningReward + this.transactionFee,
+            amount,
             timestamp,
             signature
         );
