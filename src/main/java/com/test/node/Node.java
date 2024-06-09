@@ -54,15 +54,18 @@ public class Node extends Thread {
             if (message.getHeader("event").equals("send-transaction")) {
                 HashMap<String, Object> payload = message.getJsonBody();
 
-                this.listener.onTransactionReceived(
-                    new Transaction(
+                try {
+                    Transaction trx = new Transaction(
                         (String) payload.get("from"),
                         (String) payload.get("to"),
                         (Double) payload.get("amount"),
                         ((Double) payload.get("timestamp")).longValue(),
                         (String) payload.get("signature")
-                    )
-                );
+                    );
+                    this.listener.onTransactionReceived(trx);
+                } catch (Exception e) {
+
+                }
             }
         }
     }

@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.test.blockchain.Block;
 import com.test.blockchain.Blockchain;
-import com.test.blockchain.MineListener;
-import com.test.blockchain.Miner;
 import com.test.blockchain.Transaction;
+import com.test.miner.MineListener;
+import com.test.miner.Miner;
 import com.test.node.Message;
 import com.test.node.Node;
 import com.test.node.NodeAddress;
@@ -23,6 +23,10 @@ public class Main implements MainListener, NodeFinderListener, MineListener {
     public static void main(String[] args) {
         NodeFinder finder = NodeFinder.getInstance();
         finder.findNodes(new Main());
+    }
+
+    public Main() {
+        this.blockchain.initialize();
     }
 
     @Override()
@@ -46,12 +50,16 @@ public class Main implements MainListener, NodeFinderListener, MineListener {
     @Override()
     public void onBlockMined(Block block) {
         System.out.println("Block mined. Will verify first then send to connected nodes...");
-        if (!block.getHash().equals(block.computeHash())) {
+        try {
+            if (!block.getHash().equals(block.computeHash())) {
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return;
         }
 
-        // TODO: check order and add rearrange.
-        this.blockchain.addToBlockChain(block);
+        this.blockchain.addBlock(block);
 
         // Broadcast mine to all connected nodes
         for (Node node: this.connectedNodes) {
